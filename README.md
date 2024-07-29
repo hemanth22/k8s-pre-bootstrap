@@ -6,10 +6,9 @@ It only helps you automate the standard Kubernetes bootstrapping pre-reqs.
 
 ## Supported OS
 
-- CentOS 7
-- CentOS 8
-- Rocky Linux 8
-- AlmaLinux 8
+- Rocky Linux 8|9
+- AlmaLinux 8|9
+- CentOS Stream 9
 
 ## Required Ansible
 Ansible version required `2.10+`
@@ -28,13 +27,13 @@ This role contains tasks to:
 
 - Clone the Project:
 
-```
+```bash
 $ git clone https://github.com/jmutai/k8s-pre-bootstrap.git
 ```
 
 - Configure `/etc/hosts` file in your bastion or workstation with all nodes and ip addresses. Example:
 
-```
+```bash
 192.168.200.10 k8smaster01.example.com k8smaster01
 192.168.200.11 k8smaster02.example.com k8smaster02
 192.168.200.12 k8smaster03.example.com k8smaster03
@@ -47,7 +46,7 @@ $ git clone https://github.com/jmutai/k8s-pre-bootstrap.git
 
 - Update your inventory, for example:
 
-```
+```bash
 $ vim hosts
 [k8snodes]
 k8smaster01
@@ -61,7 +60,7 @@ k8snode04
 
 - Update variables in playbook file
 
-```
+```yaml
 $ vim k8s-prep.yml
 ---
 - name: Prepare Kubernetes Nodes for Cluster bootstrapping
@@ -71,12 +70,11 @@ $ vim k8s-prep.yml
   become_method: sudo
   #gather_facts: no
   vars:
-    k8s_version: "1.28"                                  # Kubernetes version to be installed
+    k8s_version: "1.29"                                  # Kubernetes version to be installed
     selinux_state: permissive                            # SELinux state to be set on k8s nodes                 
     timezone: "Africa/Nairobi"                           # Timezone to set on all nodes
     k8s_cni: calico                                      # calico, flannel
     container_runtime: cri-o                             # docker, cri-o, containerd 
-    crio_distro_version: CentOS_8_Stream                 # CentOS_9_Stream, CentOS_8, CentOS_8_Stream, CentOS_7
     pod_network_cidr: "172.18.0.0/16"                    # pod subnet if using cri-o runtime
     configure_firewalld: false                           # true / false (keep it false, k8s>1.19 have issues with firewalld)
     # Docker proxy support
@@ -89,7 +87,7 @@ $ vim k8s-prep.yml
 
 If you are using non root remote user, then set username and enable sudo:
 
-```
+```bash
 become: yes
 become_method: sudo
 ```
@@ -104,7 +102,7 @@ Once all values are updated, you can then run the playbook against your nodes.
 
 Check file:
 
-```
+```yaml
 $ vim roles/kubernetes-bootstrap/tasks/configure_firewalld.yml
 ....
 - name: Configure firewalld on master nodes
